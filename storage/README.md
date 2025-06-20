@@ -46,7 +46,7 @@ My boot drive is small and I run all my containers and virtual machine disks on 
 3. Check to ensure your local storage partition is using all available space. Reassign storage for containers and VM if needed.
 
 #### Ensure IOMMU is enabled
-Enable IOMMU on in grub configuration within _Node > Shell_.
+Enable IOMMU on in grub configuration within _Node > Shell_. This is needed for passthrough of Intel GPUs for transcoding.
 ```bash
 nano /etc/default/grub
 ```
@@ -79,7 +79,7 @@ First, checkout you disks and make sure that they're all there. Find this under 
 
 Now, on the Proxmox sidebar for your datacenter, go to _Disks > ZFS > Create: ZFS_. This will pop up the screen to create a ZFS pool.
 
-From this screen, it should show all of your drives, so select the ones you want in your pool, and select your RAID level (in my case RAIDZ for my vault pool and mirror for my flash pool) and compression, (in my case I keep it at on). Make sure you check the box that says __Add to Storage__. This will make the pools immediately available and will prevent using .raw files as opposed to my previous setup when I added directories.
+From this screen, it should show all of your drives, so select the ones you want in your pool, and select your RAID level (in my case RAIDZ for my tank pool and mirror for my flash pool) and compression, (in my case I keep it at on). Make sure you check the box that says __Add to Storage__. This will make the pools immediately available and will prevent using .raw files as opposed to my previous setup when I added directories.
 
 ![](https://raw.githubusercontent.com/TechHutTV/homelab/refs/heads/main/storage/4_proxmox-mirror-nvme.jpeg)
 
@@ -87,13 +87,22 @@ From this screen, it should show all of your drives, so select the ones you want
 
 Now time to put these new storage pools in use. For this, we are going to create our first LXC. In this example the LXC is going to be in charge of managing our media server. First we need a operating system image. Click on your local storage in the sidebar and click on CT Templates then the Templates button. From there search for Ubuntu and download the ubuntu-22.04-standard template.
 
-Now in the top right click on Create CT. The "Create: LXC Container" prompt should show up. On the general tab I set my CT ID to 100 (later I will match this to a local IP for organization) and I set the hostname to "servarr", you can name it anything like media, jellyfin, or whatever. Set your password, keep the container and unprivileged and click Next. Select your downloaded Ubuntu template and click next. Under disk you can select your storage location. If you created the flash pool like we did earlier select it, otherwise local is fine. For storage I picked 64gb as my media server is quite large. Click next as we will add the data and docker directory later. Give it as many CPU cores and ram as you need, for my setup I gave it 6 cores and 8gb of memory.
+Now in the top right click on Create CT. The "Create: LXC Container" prompt should show up. On the general tab I set my CT ID to 100 (later I will match this to a local IP for organization) and I set the hostname to "media", you can name it anything like media, jellyfin, or whatever. Set your password, keep the container and unprivileged and click Next. Select your downloaded Ubuntu template and click next. Under disk you can select your storage location. If you created the flash pool like we did earlier select it, otherwise local is fine. For storage I picked 64gb as my media server is quite large. Click next as we will add the data and docker directory later. Give it as many CPU cores and ram as you need, for my setup I gave it 6 cores and 8gb of memory.
 
-Under network we will leave most everything, but I like to give it a static IP here. If you want to manage this with your router select DHCP. Under IPv4 I set the IPv4/CIDR to `10.0.0.100/24` and the gateway to `10.0.0.1` your local IP may be different. Keep DNS as is and confirm the installation.
+Under network we will leave most everything, but I like to give it a static IP here. If you want to manage this with your router select DHCP. Under IPv4 I set the IPv4/CIDR to `192.168.0.100/24` and the gateway to `192.168.0.1` your local IP may be different. Keep DNS as is and confirm the installation.
 
 ### 4. Adding Mount Points
 
-Now that our container is created I want to add some storage and mount the data and docker directories on my system. Click on your newly created LXC and then click on Resources. From there click the Add button and select mount point. The first one I'll add is going to be for the bulk file storage or I will change the option under storage to tank. For path I will set this to /data and uncheck backup. We will set up backups later. I want to dedicate a ton of room to this so I 26078 GiB (28 TB). Set this to what works best your how much media you'd like to store there. I keep everything else as is and click create. For the docker mount I repeated all these steps, but set the storage to flash, mount point to /docker, and gave it about 128gb of space.
+Now that our container is created I want to add some storage and mount the data and docker directories on my system. ~~Click on your newly created LXC and then click on Resources. From there click the Add button and select mount point. The first one I'll add is going to be for the bulk file storage or I will change the option under storage to tank. For path I will set this to /data and uncheck backup.~~ <- This causes data loss for mount points on container deletion. Create mount points in the config file instead:
+
+```bash
+zfs create tank/data
+zfs create flash/docker
+echo "mp0: /tank/data,mp=/data" >> /etc/pve/lxc/100.conf
+echo "mp1: /flash/docker,mp=/docker" >> /etc/pve/lxc/100.conf
+```
+
+We will set up backups later. I want to dedicate a ton of room to this so I 26078 GiB (28 TB). Set this to what works best your how much media you'd like to store there. I keep everything else as is and click create. For the docker mount I repeated all these steps, but set the storage to flash, mount point to /docker, and gave it about 128gb of space.
 
 ### 5. Creating SMB Shares
 
@@ -105,19 +114,19 @@ In our new LXC we first need to run some general updates and user creation.
    ```
 2. Create your user
    ```bash
-   adduser brandon
-   adduser brandon sudo
+   adduser sirderyl
+   adduser sirderyl sudo
    ```
 
    Great [video resource by KeepItTechie](https://www.youtube.com/watch?v=2gW4rWhurUs), [source](https://gist.github.com/pjobson/3811b73740a3a09597511c18be845a6c)
 3. Switch to your new user
    ```bash
-   su - brandon
+   su sirderyl
    ```
-4. Set permissions of mount points created earlier.
+4. Set permissions of mount points created earlier (on host pve node as root). 1000 is the ID of sirderyl user so the host UID on this container/VMs (and all the other containers as long as default UID mapping is not changed) is 101000. Restart the container.
    ```bash
-   sudo chown -R brandon:brandon /data
-   sudo chown -R brandon:brandon /docker
+   sudo chown -R 101000:101000 /tank/data
+   sudo chown -R sirderyl:sirderyl /flash/docker
    ```
 5. Install Samba
    ```bash
@@ -140,12 +149,12 @@ In our new LXC we first need to run some general updates and user creation.
       security = user
       map to guest = Bad User
       name resolve order = bcast host
-      hosts allow = 10.0.0.0/24
+      hosts allow = 192.168.0.0/24
       hosts deny = 0.0.0.0/0
    [data]
       path = /data
-      force user = brandon
-      force group = brandon
+      force user = sirderyl
+      force group = sirderyl
       create mask = 0774
       force create mode = 0774
       directory mask = 0775
@@ -156,8 +165,8 @@ In our new LXC we first need to run some general updates and user creation.
       guest ok = no
    [docker]
       path = /docker
-      force user = brandon
-      force group = brandon
+      force user = sirderyl
+      force group = sirderyl
       create mask = 0774
       force create mode = 0774
       directory mask = 0775
@@ -169,7 +178,7 @@ In our new LXC we first need to run some general updates and user creation.
    ```
 8. Add your samba user
    ```bash
-   sudo smbpasswd -a [username]
+   sudo smbpasswd -a sirderyl
    ```
 9. Set services to auto start on reboot
    ```bash
@@ -181,7 +190,6 @@ In our new LXC we first need to run some general updates and user creation.
 10. Install wsdd for Windows discovery
     ```bash
     sudo apt install wsdd
-    sudo apt install wsdd-server
     ```
 11. Allow services on firewall if you run into any issues.
     ```bash
