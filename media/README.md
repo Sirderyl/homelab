@@ -55,6 +55,67 @@ Media Servers have their own guides! Check the link below and it will take you t
 - [Jellyfin](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin)
 - [Plex](https://github.com/TechHutTV/homelab/tree/main/media/plex)
 
+## VM Setup
+### Create Ubuntu Server VM
+In Proxmox, go to _local -> ISO Images -> Download from URL_ and paste in a link to a Ubuntu Server ISO. Then, click on _Create VM_.\
+General: Name - servarr\
+OS: pick the ISO image\
+Disk: 32-64 GB\
+CPU: 6 Cores\
+Memory: 8192 MB
+
+### Enable Intel QuickSync
+Described in section Jellyfin - Hardware Transcoding
+
+### Install Ubuntu Server
+Notes:\
+Check "Search for third-party drivers"\
+Netowrk configuration:
+
+* Subnet: 192.168.0.0/24
+* Address: 192.168.0.101
+* Gateway: 192.168.0.1
+* Name servers: 8.8.8.8,8.8.4.4
+
+Uncheck "Set up this disk as an LVM group"\
+Check "Install OpenSSH server"\
+After installation, remove the ISO in CD/DVD Drive in the Hardware tab. Now you can SSH into the VM remotely.
+
+### Post-install
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+Install Docker:
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+
+Manage docker as a non-root user:
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+Make sure Intel GPU is added for hardware transcoding (shuold see card0, card1, renderD128):
+```bash
+ll /dev/dri
+sudo usermod -aG render sirderyl
+```
+
+To make sure everything is working, install intel-gpu-tools to monitor GPU usage:
+```bash
+sudo apt install intel-gpu-tools
+sudo intel_gpu_top
+```
+
+Create the data directory to get ready for network share:
+```bash
+sudo mkdir /data
+sudo mkdir /docker
+```
+
 ## Data Directory
 ### Folder Mapping
 It's good practice to give all containers the same access to the same root directory or share. This is why all containers in the compose file have the bind volume mount `/data:/data`. It makes everything easier, plus passing in two volumes such as the commonly suggested `/tv`, `/movies`, and `/downloads` makes them look like two different file systems, even if they are a single file system outside the container. See my current setup below.
@@ -79,7 +140,32 @@ data
 ```
 Here is a easy command to create the download directory scheme. Run within the `/data` directory.
 ```bash
-mkdir -p downloads/qbittorrent/{completed,incomplete,torrents} && mkdir -p downloads/nzbget/{completed,intermediate,nzb,queue,tmp}
+mkdir -p downloads/qbittorrent/{completed,incomplete,torrents} && mkdir -p downloads/nzbget/{completed,intermediate,nzb,queue,tmp} && mkdir books && mkdir movies && mkdir music && mkdir shows && mkdir youtube
+```
+
+## User Permissions
+Using bind mounts (`path/to/config:/config`) may lead to permission conflicts between the host operating system and the container. To avoid this problem, you can specify the user ID (`PUID`) and group ID (`PGID`) to use within some of the containers. This will give your user permissions to read and write configuration files, etc.
+
+In the compose file I use `PUID=1000` and `PGID=1000`, as those are generally the default IDs in most Linux systems, but depending on your setup you may need to change this.
+
+```bash
+id
+```
+This command will return something like the following:
+```
+uid=1000(sirderyl) gid=1000(sirderyl) groups=1000(sirderyl),27(sudo),24(cdrom),30(dip),46(plugdev),108(lxd)
+```
+If you are using a network share mounted though `/etc/fstab` match the permissions there. Learn more above.
+
+If you run into errors after creating all the folders you can assign the permissions using `chown`. For example:
+```bash
+sudo mkdir /data
+sudo chown -R 1000:1000 /data
+```
+Also, I like to store all my Docker configurations in a root `/docker` directory on my Linux system. These can go wherever you prefer whether that be your home directory or somewhere else. Do note, many Docker apps may have issues if you're trying to store you Docker configurations in a SMB network share.
+```bash
+sudo mkdir /docker
+sudo chown -R 1000:1000 /docker
 ```
 
 ### Network Share
@@ -89,12 +175,13 @@ Within the VM install `cifs-utils`
 ```bash
 sudo apt install cifs-utils
 ```
-Now, edit the `fstab` file and add the following lines editing them to match your information:
+Now, edit the `fstab` file and add the following lines editing them to match your information (replace username and password):
 ```bash
 sudo nano /etc/fstab
 ```
 ```
-//10.0.0.100/data /data cifs uid=1000,gid=1000,username=user,password=password,iocharset=utf8 0 0
+# Remote Shares
+//192.168.0.100/data /data cifs uid=1000,gid=1000,username=user,password=password,iocharset=utf8 0 0
 ```
 Storing the user credentials within this file isn't the best idea. Check out [this question](https://unix.stackexchange.com/questions/178187/how-to-edit-etc-fstab-properly-for-network-drive) on Stack Exchange to learn more.
 
@@ -102,31 +189,13 @@ Now reload the configuration and mount the shares with the following commands.
 ```bash
 sudo systemctl daemon-reload
 sudo mount -a
+ls /data
 ```
 
-## User Permissions
-Using bind mounts (`path/to/config:/config`) may lead to permission conflicts between the host operating system and the container. To avoid this problem, you can specify the user ID (`PUID`) and group ID (`PGID`) to use within some of the containers. This will give your user permissions to read and write configuration files, etc.
+## Installing Jellyfin Server
+Create 'jellyfin' directory inside 'docker'.\
+The rest is described in section Jellyfin -> Docker Setup
 
-In the compose file I use `PUID=1000` and `PGID=1000`, as those are generally the default IDs in most Linux systems, but depending on your setup you may need to change this.
-
-```bash
-id your_user
-```
-This command will return something like the following:
-```
-uid=1000(your_user) gid=1000(your_user) groups=1000(your_user),27(sudo),24(cdrom),30(dip),46(plugdev),108(lxd)
-```
-If you are using a network share mounted though `/etc/fstab` match the permissions there. Learn more above.
-
-If you run into errors after creating all the folders you can assign the permissions using `chown`. For example:
-```bash
-sudo chown -R 1000:1000 /data
-```
-Also, I like to store all my Docker configurations in a root `/docker` directory on my Linux system. These can go wherever you prefer whether that be your home directory or somewhere else. Do note, many Docker apps may have issues if you're trying to store you Docker configurations in a SMB network share.
-```bash
-mkdir /docker
-sudo chown -R 1000:1000 /docker
-```
 ## Docker Compose and .env
 Navigate to the directory you want to spin up the servarr stack in. I run mine from `/docker/servarr` but you can run it from anywhere you'd like such as `/home/user/docker/servarr`. Then download the `compose.yaml` and `.env` files from this repo.
 ```bash

@@ -65,7 +65,8 @@ sudo chown -R 1000:1000 /docker
 There are two options for installing Jellyfin. Both work great and it's all a matter of preference. I generally install Jellyfin directly on the LXC within Proxmox that contains all my data.
 
 ### Docker Setup (Recommended)
-Docker is another option to install and run Jellyfin. Check out the `compose.yaml` file or the full stack.
+Docker is another option to install and run Jellyfin. Check out the `compose.yaml` file or the full stack.\
+Create a `nano compose.yaml` inside the jellyfin folder and paste this:
 
 ```yaml
 services:
@@ -75,8 +76,8 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=America/Los_Angeles
-      - JELLYFIN_PublishedServerUrl=http://10.0.0.101 #optional
+      - TZ=Europe/Prague
+      - JELLYFIN_PublishedServerUrl=http://192.168.0.101 #optional
     volumes:
       - ./config:/config
       - /data:/data
@@ -88,6 +89,21 @@ services:
       - 1900:1900/udp #Client Discovery
     restart: unless-stopped
 ```
+
+Start the container (run without the -d flag first to check for any errors):
+```bash
+docker compose up -d
+```
+
+#### Jellyfin Setup
+Add Movies and Shows folders\
+Enable automatic port mapping
+
+#### Enable Hardware Transcoding
+_Dashboard -> PLayback -> Transcoding_\
+Set Hardware acceleration to Intel QuickSync and paste in the path to renderD128 (located below the textbox)\
+Tick HEVC and AV1 as well\
+Save
 
 ### System Installation (NOT Recommended)
 Run the following command on your Ubuntu system, VM, or Proxmox LXC. You can learn about how to verify the script integrity [here](https://jellyfin.org/docs/general/installation/linux/).
