@@ -138,7 +138,7 @@ data
 ├── shows
 └── youtube
 ```
-Here is a easy command to create the download directory scheme. Run within the `/data` directory (on the node shell):
+Here is a easy command to create the download directory scheme. Run within the `/data` directory (on the media container):
 ```bash
 mkdir -p downloads/qbittorrent/{completed,incomplete,torrents} && mkdir -p downloads/nzbget/{completed,intermediate,nzb,queue,tmp} && mkdir books && mkdir movies && mkdir music && mkdir shows && mkdir youtube
 ```
