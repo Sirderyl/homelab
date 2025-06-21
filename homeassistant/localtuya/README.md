@@ -1,15 +1,15 @@
 ## Navigation
-* [Home Assistant](https://github.com/TechHutTV/homelab/tree/main/homeassistant)
-  - [Dashboard](https://github.com/TechHutTV/homelab/tree/main/homeassistant/dashboard)
-  - [__LocalTuya__](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya)
-    - [LocalTuya in Home Assistant](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya#localtuya-in-home-assistant)
-      - [Install and Setup LocalTuya Fork](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya#install-and-setup-localtuya-fork)
-      - [Credentials from Tuya IoT Platform](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya#credentials-from-tuya-iot-platform)
-      - [Adding Tuya devices in Home Assistant](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya#adding-tuya-devices-in-home-assistant)
-      - [Manual configuration tips](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya#manual-configuration-tips)
-    - [XMCOSY String Lights with LocalTuya](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya#xmcosy-string-lights-with-localtuya)
-      - [Finding Raw Data Values for Scenes](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya#finding-raw-data-values-for-scenes)
-  - [Zigbee](https://github.com/TechHutTV/homelab/tree/main/homeassistant/zigbee)
+* [Home Assistant](https://github.com/Sirderyl/homelab/tree/main/homeassistant)
+  - [Dashboard](https://github.com/Sirderyl/homelab/tree/main/homeassistant/dashboard)
+  - [__LocalTuya__](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya)
+    - [LocalTuya in Home Assistant](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya#localtuya-in-home-assistant)
+      - [Install and Setup LocalTuya Fork](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya#install-and-setup-localtuya-fork)
+      - [Credentials from Tuya IoT Platform](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya#credentials-from-tuya-iot-platform)
+      - [Adding Tuya devices in Home Assistant](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya#adding-tuya-devices-in-home-assistant)
+      - [Manual configuration tips](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya#manual-configuration-tips)
+    - [XMCOSY String Lights with LocalTuya](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya#xmcosy-string-lights-with-localtuya)
+      - [Finding Raw Data Values for Scenes](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya#finding-raw-data-values-for-scenes)
+  - [Zigbee](https://github.com/Sirderyl/homelab/tree/main/homeassistant/zigbee)
 
 ## LocalTuya in Home Assistant
 When I first tired integrating XMCOSY String Lights with LocalTuya I followed a few different [guides](https://thehelpfulidiot.com/integrating-xmcosy-outdoor-string-lights-with-home-assistant-locally), but had no luck. The main issue ended up being LocalTuya itself. I found that using [this fork](https://github.com/xZetsubou/localtuya) works great and it's more up to date. This quick guide assumes you have the Tuya app setup with your devices added. Also, you'll need a [Tuya developer account](https://platform.tuya.com/) to get this setup.

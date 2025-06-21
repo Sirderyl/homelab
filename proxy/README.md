@@ -5,17 +5,17 @@ This is going to be an overview of my setup for connecting to specific services 
 This is done on Proxmox with an LXC running Ubuntu 22.04 and Docker. However, these steps will work with any Docker installation. If you want details on installing Docker and a brief overview of all the basics you need to know to get started checkout our [7 Docker Basics for Beginners](https://techhut.tv/7-docker-basics-for-beginner).
 
 ## Navigation
-* [Apps](https://github.com/TechHutTV/homelab/tree/main/apps) - List of all the apps and services.
-* [Home Assistant](https://github.com/TechHutTV/homelab/tree/main/homeassistant) - Smart home services and automation.
-* [Media Server](https://github.com/TechHutTV/homelab/tree/main/media) - Plex, Jellyfin, *arr stack, and more.
-* [Server Monitoring](https://github.com/TechHutTV/homelab/tree/main/monitoring) - Graphs and Visualizations for Unriad, Proxmox, and more.
-* [Surveillance System](https://github.com/TechHutTV/homelab/tree/main/surveillance) - Frigate NVR Solution with Coral TPU.
-* [Storage](https://github.com/TechHutTV/homelab/tree/main/storage) - Current Storage and Backup Solution.
-* [__Proxy Managment__](https://github.com/TechHutTV/homelab/tree/main/proxy) - NGINX Proxy Manager, DDNS with Cloudflare, Local Domains, and more.
+* [Apps](https://github.com/Sirderyl/homelab/tree/main/apps) - List of all the apps and services.
+* [Home Assistant](https://github.com/Sirderyl/homelab/tree/main/homeassistant) - Smart home services and automation.
+* [Media Server](https://github.com/Sirderyl/homelab/tree/main/media) - Plex, Jellyfin, *arr stack, and more.
+* [Server Monitoring](https://github.com/Sirderyl/homelab/tree/main/monitoring) - Graphs and Visualizations for Unriad, Proxmox, and more.
+* [Surveillance System](https://github.com/Sirderyl/homelab/tree/main/surveillance) - Frigate NVR Solution with Coral TPU.
+* [Storage](https://github.com/Sirderyl/homelab/tree/main/storage) - Current Storage and Backup Solution.
+* [__Proxy Managment__](https://github.com/Sirderyl/homelab/tree/main/proxy) - NGINX Proxy Manager, DDNS with Cloudflare, Local Domains, and more.
 
 
 ## Installing NGINX Proxy Manager
-This is done with the [Docker Compose file](https://github.com/TechHutTV/homelab/blob/main/proxy/compose.yaml) within this repository. Do note, I made some customizations for how I specifically like to set it up. I've changed some of the external ports to access 80, 443, and the GUI for NGINX Proxy Manager as well as placing the storage within [volumes](https://docs.docker.com/engine/storage/volumes/). Please change these as needed or use the [official compose file](https://github.com/NginxProxyManager/nginx-proxy-manager) as seen below. Additionally, I've added the container [cloudflare-dynamic-dns](https://github.com/favonia/cloudflare-ddns) as my IP address changes randomly. If you don't have a dynamic IP address or don't have intention on exposing a service to the internet you can remove this container from the compose file.
+This is done with the [Docker Compose file](https://github.com/Sirderyl/homelab/blob/main/proxy/compose.yaml) within this repository. Do note, I made some customizations for how I specifically like to set it up. I've changed some of the external ports to access 80, 443, and the GUI for NGINX Proxy Manager as well as placing the storage within [volumes](https://docs.docker.com/engine/storage/volumes/). Please change these as needed or use the [official compose file](https://github.com/NginxProxyManager/nginx-proxy-manager) as seen below. Additionally, I've added the container [cloudflare-dynamic-dns](https://github.com/favonia/cloudflare-ddns) as my IP address changes randomly. If you don't have a dynamic IP address or don't have intention on exposing a service to the internet you can remove this container from the compose file.
 
 ### NGINX Proxy Manager Compose (customized)
 
@@ -40,7 +40,7 @@ volumes:
 
 This is setup as a host network to allow localhost and local networking connections without needing to add ports for all the services to the container.
 
-_Below is a basic compose template from NGINX if you don't want to use [mine](https://github.com/TechHutTV/homelab/blob/main/proxy/compose.yaml)._
+_Below is a basic compose template from NGINX if you don't want to use [mine](https://github.com/Sirderyl/homelab/blob/main/proxy/compose.yaml)._
 
 #### Official Compose from NginxProxyManager/nginx-proxy-manager
 
@@ -97,7 +97,7 @@ This is the port on the device that is initiating the communication. For example
 This is the port on the device that will receive the communication. For example, when you're connecting to a web server. The destination port is fixed for the service you're trying to reach and tells the receiving device what service or application should handle the incoming data.
 </details>
 
-![Omada Port Forwarding](https://github.com/TechHutTV/homelab/blob/main/proxy/images/odama-port-forwarding-443.jpeg)
+![Omada Port Forwarding](https://github.com/Sirderyl/homelab/blob/main/proxy/images/odama-port-forwarding-443.jpeg)
 
 If using bridge mode with custom ports, for example 5080 and 5443 as shown in the example. I'd set the destination port to 5443 and the source port to 443 for https.
 
@@ -138,7 +138,7 @@ services:
 * **Too Many Redirects:** Force SSL may not work with CloudFlare proxying. [issue](https://github.com/NginxProxyManager/nginx-proxy-manager/issues/852)
 * **Disable Cloudflare Proxy on Streaming:** Jellyfin, Plex and other streaming services are not allowed to use Proxy on the free plan. Doing this technically [breaks their TOS](https://www.cloudflare.com/service-specific-terms-application-services/#content-delivery-network-terms) and may result in your account getting banned. Just to be safe I used a subdomain for my Jellyfin instance as a separate A-Record and disabled the Cloudflare Proxy.
 
-![Disable Cloudflare Proxy for Media Streaming](https://github.com/TechHutTV/homelab/blob/main/proxy/images/disable-proxy-media-streaming.png)
+![Disable Cloudflare Proxy for Media Streaming](https://github.com/Sirderyl/homelab/blob/main/proxy/images/disable-proxy-media-streaming.png)
 
 ---
 
@@ -151,7 +151,7 @@ Within this section we will use our NGINX Proxy Manager setup and our domain reg
 ### Local IP on Registar
 Assign a local IP scheme in the domain registration website. The local IP you will use is the same as the machine running NGINX Proxy Manager. (ie. 10.0.0.60). You'll want to assign this to the A-Record for the main domain and create a CNAME Record as a wildcard (*) pointing to the main domain name. Due note, this may take some time, it took about 15 minutes for the record to update for me. If you're using Cloudflare make sure you disable their proxy service.
 
-![Record for Local Top-Level Domain](https://github.com/TechHutTV/homelab/blob/main/proxy/images/local-ip-wildcard.png)
+![Record for Local Top-Level Domain](https://github.com/Sirderyl/homelab/blob/main/proxy/images/local-ip-wildcard.png)
 
 While you're on Cloudflare or the registar find your API key. You'll need this for generating SSL certificates in the DNS challenges option. Many providers are supported and you can see a [full list here](https://community.letsencrypt.org/t/dns-providers-who-easily-integrate-with-lets-encrypt-dns-validation/86438).
 
@@ -198,13 +198,13 @@ When you create your connector in the Twingate dashboard you'll generate some to
 
 Next, create a new resource with the IP of your proxy manager and add the local root domain as an alias. Once created you should be able to have access to the local domain we created earlier including sub-domains. See the image before for an example.
 
-![Adding an Alias in Twingate](https://github.com/TechHutTV/homelab/blob/main/proxy/images/twingate-alias.jpeg)
+![Adding an Alias in Twingate](https://github.com/Sirderyl/homelab/blob/main/proxy/images/twingate-alias.jpeg)
 
 # Additional Resources
 
 | Additional Security Steps | Twingate Guide |
 | ------------- | ------------- |
-| [![Twingate Guide](https://github.com/TechHutTV/homelab/blob/main/proxy/images/technotim-security-guide.jpg)](https://www.youtube.com/watch?v=Cs8yOmTJNYQ "DITCH your VPN! - How I Access my Home Server from ANYWHERE @TechHut")  | [![Additional Security Steps](https://github.com/TechHutTV/homelab/blob/main/proxy/images/twingate-techhut.jpg)](https://youtu.be/yaw2A3DG664 "Self-Hosting Security Guide for your HomeLab @TechnoTim")  |
+| [![Twingate Guide](https://github.com/Sirderyl/homelab/blob/main/proxy/images/technotim-security-guide.jpg)](https://www.youtube.com/watch?v=Cs8yOmTJNYQ "DITCH your VPN! - How I Access my Home Server from ANYWHERE @TechHut")  | [![Additional Security Steps](https://github.com/Sirderyl/homelab/blob/main/proxy/images/twingate-techhut.jpg)](https://youtu.be/yaw2A3DG664 "Self-Hosting Security Guide for your HomeLab @TechnoTim")  |
 
 
 ## Setup Netbird for remote connections (work in progress)

@@ -1,8 +1,8 @@
 ## Navigation
-* [Home Assistant](https://github.com/TechHutTV/homelab/tree/main/homeassistant)
-  - [__Dashboard__](https://github.com/TechHutTV/homelab/tree/main/homeassistant/dashboard)
-  - [LocalTuya](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya)
-  - [Zigbee](https://github.com/TechHutTV/homelab/tree/main/homeassistant/zigbee)
+* [Home Assistant](https://github.com/Sirderyl/homelab/tree/main/homeassistant)
+  - [__Dashboard__](https://github.com/Sirderyl/homelab/tree/main/homeassistant/dashboard)
+  - [LocalTuya](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya)
+  - [Zigbee](https://github.com/Sirderyl/homelab/tree/main/homeassistant/zigbee)
 
 Custom card compents used; [bubble card](https://github.com/Clooos/Bubble-Card), [mini graph card](https://github.com/kalkih/mini-graph-card).
 

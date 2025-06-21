@@ -41,7 +41,7 @@ pages:
               </div>
 
           - type: repository
-            repository: TechHutTV/homelab
+            repository: Sirderyl/homelab
             pull-requests-limit: 5
             issues-limit: 3
             commits-limit: 3
@@ -270,7 +270,7 @@ pages:
             # token: ...
             repositories:
               - glanceapp/glance
-              - TechHutTV/homelab
+              - Sirderyl/homelab
               - immich-app/immich
 
   # Add more pages here:

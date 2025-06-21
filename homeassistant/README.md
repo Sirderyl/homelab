@@ -2,16 +2,16 @@
 This is a work in progress, check back for more!
 
 ## Navigation
-* [Apps](https://github.com/TechHutTV/homelab/tree/main/apps) - List of all the apps and services.
-* [__Home Assistant__](https://github.com/TechHutTV/homelab/tree/main/homeassistant) - Smart home services and automation.
-  - [Dashboard](https://github.com/TechHutTV/homelab/tree/main/homeassistant/dashboard)
-  - [LocalTuya](https://github.com/TechHutTV/homelab/tree/main/homeassistant/localtuya)
-  - [Zigbee](https://github.com/TechHutTV/homelab/tree/main/homeassistant/zigbee)
-* [Media Server](https://github.com/TechHutTV/homelab/tree/main/media) - Plex, Jellyfin, *arr stack, and more.
-* [Server Monitoring](https://github.com/TechHutTV/homelab/tree/main/monitoring) - Graphs and Visualizations for Unriad, Proxmox, and more.
-* [Surveillance System](https://github.com/TechHutTV/homelab/tree/main/surveillance) - Frigate NVR Solution with Coral TPU.
-* [Storage](https://github.com/TechHutTV/homelab/tree/main/storage) - Current Storage and Backup Solution.
-* [Proxy Managment](https://github.com/TechHutTV/homelab/tree/main/proxy) - NGINX Proxy Manager, DDNS with Cloudflare, Local Domains, and more.
+* [Apps](https://github.com/Sirderyl/homelab/tree/main/apps) - List of all the apps and services.
+* [__Home Assistant__](https://github.com/Sirderyl/homelab/tree/main/homeassistant) - Smart home services and automation.
+  - [Dashboard](https://github.com/Sirderyl/homelab/tree/main/homeassistant/dashboard)
+  - [LocalTuya](https://github.com/Sirderyl/homelab/tree/main/homeassistant/localtuya)
+  - [Zigbee](https://github.com/Sirderyl/homelab/tree/main/homeassistant/zigbee)
+* [Media Server](https://github.com/Sirderyl/homelab/tree/main/media) - Plex, Jellyfin, *arr stack, and more.
+* [Server Monitoring](https://github.com/Sirderyl/homelab/tree/main/monitoring) - Graphs and Visualizations for Unriad, Proxmox, and more.
+* [Surveillance System](https://github.com/Sirderyl/homelab/tree/main/surveillance) - Frigate NVR Solution with Coral TPU.
+* [Storage](https://github.com/Sirderyl/homelab/tree/main/storage) - Current Storage and Backup Solution.
+* [Proxy Managment](https://github.com/Sirderyl/homelab/tree/main/proxy) - NGINX Proxy Manager, DDNS with Cloudflare, Local Domains, and more.
 
 To do
 * [https://github.com/custom-cards/upcoming-media-card](https://github.com/custom-cards/upcoming-media-card)

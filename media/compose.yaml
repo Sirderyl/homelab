@@ -6,7 +6,7 @@
 
 #############################################################################
 # NOTICE: We recently switched to using a .env file. PLEASE refer to the docs.
-# https://github.com/TechHutTV/homelab/tree/main/media#docker-compose-and-env
+# https://github.com/Sirderyl/homelab/tree/main/media#docker-compose-and-env
 #############################################################################
 
 networks:

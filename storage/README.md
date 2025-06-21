@@ -4,16 +4,16 @@ In this repo I will layout my storage and backup solutions for all of the servic
 ## Video Guides
 This readme is a companion to my official walkthrough guide!
 
-[![](https://raw.githubusercontent.com/TechHutTV/homelab/refs/heads/main/storage/part1_thumbnail.webp)](https://youtu.be/qmSizZUbCOA)
+[![](https://raw.githubusercontent.com/Sirderyl/homelab/refs/heads/main/storage/part1_thumbnail.webp)](https://youtu.be/qmSizZUbCOA)
 
 ## Navigation
-* [Apps](https://github.com/TechHutTV/homelab/tree/main/apps) - List of all the apps and services.
-* [Home Assistant](https://github.com/TechHutTV/homelab/tree/main/homeassistant) - Smart home services and automation.
-* [Media Server](https://github.com/TechHutTV/homelab/tree/main/media) - Plex, Jellyfin, *arr stack, and more.
-* [Server Monitoring](https://github.com/TechHutTV/homelab/tree/main/monitoring) - Graphs and Visualizations for Unraid, Proxmox, and more.
-* [Surveillance System](https://github.com/TechHutTV/homelab/tree/main/surveillance) - Frigate NVR Solution with Coral TPU.
+* [Apps](https://github.com/Sirderyl/homelab/tree/main/apps) - List of all the apps and services.
+* [Home Assistant](https://github.com/Sirderyl/homelab/tree/main/homeassistant) - Smart home services and automation.
+* [Media Server](https://github.com/Sirderyl/homelab/tree/main/media) - Plex, Jellyfin, *arr stack, and more.
+* [Server Monitoring](https://github.com/Sirderyl/homelab/tree/main/monitoring) - Graphs and Visualizations for Unraid, Proxmox, and more.
+* [Surveillance System](https://github.com/Sirderyl/homelab/tree/main/surveillance) - Frigate NVR Solution with Coral TPU.
 * **Storage** - Current Storage and Backup Solution.
-* [Proxy Management](https://github.com/TechHutTV/homelab/tree/main/proxy) - NGINX Proxy Manager, DDNS with Cloudflare, Local Domains, and more.
+* [Proxy Management](https://github.com/Sirderyl/homelab/tree/main/proxy) - NGINX Proxy Manager, DDNS with Cloudflare, Local Domains, and more.
 
 ## Proxmox as a NAS
 My current setup involves a single server with x3 NVME drives and a bunch of hard drives in a ZFS configuration. These are combined into separate ZFS pools for the HDDs (vault) and the SSDs (flash). Vault is used as a large data storage pool and Flash is used for containers and virtual machine disks. No matter your configuration you can follow this guide. However, I would recommend at least one NVME SSD for your boot drive, and at least 512gb if you don't have any other NVME SSDs and at least x2 HDDs for file storage.
@@ -28,12 +28,12 @@ My current setup involves a single server with x3 NVME drives and a bunch of har
 2. Now click Add and enable the no subscription repository. Finally, go _Updates > Refresh_.
 3. Upgrade your system by clicking _Upgrade_ above the repository setting page.
 
-![](https://raw.githubusercontent.com/TechHutTV/homelab/refs/heads/main/storage/1_proxmox-repos.jpeg)
+![](https://raw.githubusercontent.com/Sirderyl/homelab/refs/heads/main/storage/1_proxmox-repos.jpeg)
 
 #### Delete local-lvm and Resize local (fresh install)
 
 > [!WARNING]
-> This assumes a fresh installation without advanced storage settings during the installation. See this [issue](https://github.com/TechHutTV/homelab/issues/19).
+> This assumes a fresh installation without advanced storage settings during the installation. See this [issue](https://github.com/Sirderyl/homelab/issues/19).
 
 My boot drive is small and I run all my containers and virtual machine disks on a separate storage pool. So the LVM partition is not necessary for me and goes unused. If you're running everything off the same boot drive for fast storage skips this. Also you should check out this [video](https://www.youtube.com/watch?v=czQuRgoBrmM) to learn more about LVM before doing anything.
 1. Delete local-lvm manually from web interface under _Datacenter > Storage_.
@@ -56,7 +56,7 @@ You will see the line with `GRUB_CMDLINE_LINUX_DEFAULT="quiet"`, all you need to
 GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on"
 ```
 
-![](https://raw.githubusercontent.com/TechHutTV/homelab/refs/heads/main/storage/2_proxmox-iommu.jpeg)
+![](https://raw.githubusercontent.com/Sirderyl/homelab/refs/heads/main/storage/2_proxmox-iommu.jpeg)
 
 Next run the following commands and reboot your system.
 ```bash
@@ -75,13 +75,13 @@ First, we are going to setup two ZFS Pools. A _tank_ pool which is used for larg
 
 First, checkout you disks and make sure that they're all there. Find this under _Node > Disks_. Make sure you wipe all the disks you plan on using and do note this will wipe any data on the disks, so make sure there is no important data on them and back up if needed.
 
-![](https://raw.githubusercontent.com/TechHutTV/homelab/refs/heads/main/storage/3_proxmox-wipe-disk.jpeg)
+![](https://raw.githubusercontent.com/Sirderyl/homelab/refs/heads/main/storage/3_proxmox-wipe-disk.jpeg)
 
 Now, on the Proxmox sidebar for your datacenter, go to _Disks > ZFS > Create: ZFS_. This will pop up the screen to create a ZFS pool.
 
 From this screen, it should show all of your drives, so select the ones you want in your pool, and select your RAID level (in my case RAIDZ for my tank pool and mirror for my flash pool) and compression, (in my case I keep it at on). Make sure you check the box that says __Add to Storage__. This will make the pools immediately available and will prevent using .raw files as opposed to my previous setup when I added directories.
 
-![](https://raw.githubusercontent.com/TechHutTV/homelab/refs/heads/main/storage/4_proxmox-mirror-nvme.jpeg)
+![](https://raw.githubusercontent.com/Sirderyl/homelab/refs/heads/main/storage/4_proxmox-mirror-nvme.jpeg)
 
 ### 3. Creating Containers using ZFS Pools
 

@@ -6,14 +6,14 @@ Make sure to review everything here and if you have any issues please submit it 
 > Some MAJOR Updates! Moved the VPN configuration and some of the env variables to a `.env` file. If you're watching the current live video it's a huge change. Will be uploading a new one in the next few days.
 
 ## Navigation
-* [Apps](https://github.com/TechHutTV/homelab/tree/main/apps)
-* [Home Assistant](https://github.com/TechHutTV/homelab/tree/main/homeassistant)
-* [__Media Server__](https://github.com/TechHutTV/homelab/tree/main/media)
+* [Apps](https://github.com/Sirderyl/homelab/tree/main/apps)
+* [Home Assistant](https://github.com/Sirderyl/homelab/tree/main/homeassistant)
+* [__Media Server__](https://github.com/Sirderyl/homelab/tree/main/media)
   - [Companion Video](#companion-video)
     * [Updates Since Video Publish](#updates-since-video-publish)
   - [Media Server](#media-server)
-    * [Jellyfin](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin)
-    * [Plex](https://github.com/TechHutTV/homelab/tree/main/media/plex)
+    * [Jellyfin](https://github.com/Sirderyl/homelab/tree/main/media/jellyfin)
+    * [Plex](https://github.com/Sirderyl/homelab/tree/main/media/plex)
   - [Data Directory](#data-directory)
     * [Folder Mapping](#folder-mapping)
     * [Network Share](#network-share)
@@ -36,10 +36,10 @@ Make sure to review everything here and if you have any issues please submit it 
       + [Download Directories Mapping](#qbittorrent-download-directories)
       + [qBittorrent Stalls with VPN Timeout](#qbittorrent-stalls-with-vpn-timeout)
   - [*arr Apps](#arr-apps)
-* [Server Monitoring](https://github.com/TechHutTV/homelab/tree/main/monitoring)
-* [Surveillance System](https://github.com/TechHutTV/homelab/tree/main/surveillance)
-* [Storage](https://github.com/TechHutTV/homelab/tree/main/storage)
-* [Proxy Management](https://github.com/TechHutTV/homelab/tree/main/proxy)
+* [Server Monitoring](https://github.com/Sirderyl/homelab/tree/main/monitoring)
+* [Surveillance System](https://github.com/Sirderyl/homelab/tree/main/surveillance)
+* [Storage](https://github.com/Sirderyl/homelab/tree/main/storage)
+* [Proxy Management](https://github.com/Sirderyl/homelab/tree/main/proxy)
 
 ## Companion Video
 ```
@@ -52,8 +52,8 @@ Make sure to review everything here and if you have any issues please submit it 
 ## Media Server
 Media Servers have their own guides! Check the link below and it will take you to the folder for the guides.
 
-- [Jellyfin](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin)
-- [Plex](https://github.com/TechHutTV/homelab/tree/main/media/plex)
+- [Jellyfin](https://github.com/Sirderyl/homelab/tree/main/media/jellyfin)
+- [Plex](https://github.com/Sirderyl/homelab/tree/main/media/plex)
 
 ## VM Setup
 ### Create Ubuntu Server VM
@@ -138,7 +138,7 @@ data
 ├── shows
 └── youtube
 ```
-Here is a easy command to create the download directory scheme. Run within the `/data` directory.
+Here is a easy command to create the download directory scheme. Run within the `/data` directory (on the node shell):
 ```bash
 mkdir -p downloads/qbittorrent/{completed,incomplete,torrents} && mkdir -p downloads/nzbget/{completed,intermediate,nzb,queue,tmp} && mkdir books && mkdir movies && mkdir music && mkdir shows && mkdir youtube
 ```
@@ -169,7 +169,7 @@ sudo chown -R 1000:1000 /docker
 ```
 
 ### Network Share
-I generally install Docker on the same LXC that I have my media server on as well as all my data. This, however, is [not recommended by Proxmox](https://pve.proxmox.com/pve-docs/pve-admin-guide.html#chapter_pct). Going forward you should create a separate VM for all your docker containers and mount the data directory we created in the [storage guide](https://github.com/TechHutTV/homelab/tree/main/storage) with the share. You can also use this method if you're using a separate share on another machine running something like Unraid or TrueNAS.
+I generally install Docker on the same LXC that I have my media server on as well as all my data. This, however, is [not recommended by Proxmox](https://pve.proxmox.com/pve-docs/pve-admin-guide.html#chapter_pct). Going forward you should create a separate VM for all your docker containers and mount the data directory we created in the [storage guide](https://github.com/Sirderyl/homelab/tree/main/storage) with the share. You can also use this method if you're using a separate share on another machine running something like Unraid or TrueNAS.
 
 Within the VM install `cifs-utils`
 ```bash
@@ -199,7 +199,7 @@ The rest is described in section Jellyfin -> Docker Setup
 ## Docker Compose and .env
 Navigate to the directory you want to spin up the servarr stack in. I run mine from `/docker/servarr` but you can run it from anywhere you'd like such as `/home/user/docker/servarr`. Then download the `compose.yaml` and `.env` files from this repo.
 ```bash
-wget https://github.com/TechHutTV/homelab/raw/refs/heads/main/media/compose.yaml && wget https://github.com/TechHutTV/homelab/raw/refs/heads/main/media/.env
+wget https://github.com/Sirderyl/homelab/raw/refs/heads/main/media/compose.yaml && wget https://github.com/Sirderyl/homelab/raw/refs/heads/main/media/.env
 ```
 Most of our editing is going to be done in the `.env` file. Here you change your `UID` and `GID`, timezone, and add all your VPN keys and info. You can also make edits to the `compose.yaml` file such as the mount point locations, for example, if you are using something other than `/data:/data` or even changing the docker network IP addresses for your services.
 
@@ -302,7 +302,7 @@ lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file
 Make sure you pass through the tun device (`/dev/net/tun:/dev/net/tun`) as shown in my compose file.
 
 ### Reduce Gluetun Ram Usage
-As mentioned in this [issue](https://github.com/TechHutTV/homelab/issues/12) there is a [feature request](https://github.com/qdm12/gluetun/issues/765#issuecomment-1019367595) on the Gluetun Github page to help reduce ram usage. Gluetun bundles a recursive caching DNS resolver called `unbound` for handling domain name requests securely. Over time the cache size, which rests in RAM, can balloon to gigabytes.
+As mentioned in this [issue](https://github.com/Sirderyl/homelab/issues/12) there is a [feature request](https://github.com/qdm12/gluetun/issues/765#issuecomment-1019367595) on the Gluetun Github page to help reduce ram usage. Gluetun bundles a recursive caching DNS resolver called `unbound` for handling domain name requests securely. Over time the cache size, which rests in RAM, can balloon to gigabytes.
 
 You can do this by adding the following to your docker `compose.yaml` file under the `gluetun` environment variables.
 ```yaml
@@ -357,7 +357,7 @@ qBittorrent stalls out if there is a timeout or any type of interruption on the 
 
 __Solution #1:__ Within the WebUI of qBittorrent head over to advanced options and select `tun0` as the networking interface. See image below for example.
 
-![Set Network Interface to tun0](https://raw.githubusercontent.com/TechHutTV/homelab/refs/heads/main/media/images/qbittorrent_tun0.jpeg)
+![Set Network Interface to tun0](https://raw.githubusercontent.com/Sirderyl/homelab/refs/heads/main/media/images/qbittorrent_tun0.jpeg)
 
 Next, I added `HEALTH_VPN_DURATION_INITIAL=120s` to my gluetun environment variables as [per this issue](https://github.com/qdm12/gluetun/issues/1832). I updated my `compose.yaml` above with this variable so you may already have this enabled. You can learn more about this on their [wiki](https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md). If you continue to have issues continue to next solution.
 
