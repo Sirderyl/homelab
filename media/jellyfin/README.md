@@ -20,47 +20,6 @@ docker
     └── jellystat
 ```
 
-### Network Share (VM)
-I generally install Docker on the same LXC that I have my media server on as well as all my data. This, however, is [not recommended by Proxmox](https://www.reddit.com/r/Proxmox/comments/1afslhs/should_i_use_lxc_or_vm_for_running_docker/). Going forward you should create a separate VM for all your docker containers and mount the data directory we created in the storage guide with the share. 
-
-Within the VM install `cifs-utils`
-```bash
-sudo apt install cifs-utils
-```
-Now, edit the `fstab` file and add the following lines editing them to match your information.
-```bash
-sudo nano /etc/fstab
-```
-```
-//10.0.0.100/data /data cifs uid=1000,gid=1000,username=user,password=password,iocharset=utf8 0 0
-```
-Storing the user credentials within this file isn't the best idea. Check out [this question](https://unix.stackexchange.com/questions/178187/how-to-edit-etc-fstab-properly-for-network-drive) on Stack Exchange to learn more.
-
-Now reload the configuration and mount the shares with the following commands.
-```bash
-sudo systemctl daemon-reload
-sudo mount -a
-```
-
-## User Permissions
-Using bind mounts (`path/to/config:/config`) may lead to permission conflicts between the host operating system and the container. To avoid this problem, you can specify the user ID (`PUID`) and group ID (`PGID`) to use within some of the containers. This will give your user permissions to read and write configuration files, etc.
-
-In the compose file I use `PUID=1000` and `PGID=1000`, as those are generally the default IDs in most Linux systems, but depending on your setup you may need to change this.
-
-```bash
-id your_user
-```
-This command will return something like the following:
-```
-uid=1000(brandon),gid=1003(brandon),groups=1000(data-share),988(docker)
-```
-In the example output above, if using a network share I would need to edit the `compose.yaml` with `PGID=1003`. If you are using a network share mounted though `/etc/fstab` match the permissions there. I use Cockpit with a custom group for shares so my permissions are `uid=1000(brandon),gid=1000(data-share)`.
-If you run into errors after creating all the folders you can assign the permissions using `chown`. For example:
-```bash
-sudo chown -R 1000:1000 /data
-sudo chown -R 1000:1000 /docker
-```
-
 ## Installation
 There are two options for installing Jellyfin. Both work great and it's all a matter of preference. I generally install Jellyfin directly on the LXC within Proxmox that contains all my data.
 
