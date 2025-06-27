@@ -391,4 +391,58 @@ Relevant Resources: [DBTech video on deunhealth](https://www.youtube.com/watch?v
 
 ## *arr Apps
 
-When connecting your *arr applications be sure to use the new configured IP addresses in the `servarrnetwork`. We will soon update this section with more text documentation.
+When connecting your *arr applications be sure to use the new configured IP addresses in the `servarrnetwork`.
+
+### Prowlarr
+
+#### Authentication setup
+
+Select _Forms (Login Page)_ for Authentication Method and fill in your login details.
+
+#### Indexers
+
+The recommended indexers to add:
+* 1337x - requires FlareSolverr (coming soon)
+* EZTV
+* Kickasstorrents - requires FlareSolverr (coming soon)
+* LimeTorrents - only returns category **Other** in its Keywordless search results page. To pass your apps' indexer TEST you will need to include the 800(Other) category
+* Nyaa.si - tick _Improve Sonarr/Radarr compatibility boxes_
+* Rutor - tick _Strip Cyrillic Letters_
+* Rutracker - tick _Strip Russian Letters_
+* SkTorrent
+* Solid Torrents
+* The Pirate Bay
+* TorrentGalaxy
+* TorrentProject - does not return categories in its search results. To sync to your apps, include 8000(Other) in your Apps' Sync Categories
+* TorrentsCSV
+* TreZzoR
+
+#### Configure Download Clients
+
+Go to _Settings -> Download Clients_ and add qBitTorrent and NZBGet. Replace **localhost** with the IP of the Gluetun Docker container (found in compose.yaml). For NZBGet, change the default category to **Movies**.
+
+#### Configure Apps
+
+First, configure the individual apps Radarr, then come back to this section.
+
+Go to _Settings -> Apps_, add Radarr and paste the API key. Replace localhost under **Prowlarr Server** with the **Gluetun** container IP and under **Radarr/Sonarr/Lidarr Server** with the **Radarr/Sonarr/Lidarr** container IP.
+
+### Radarr / Sonarr / Lidarr
+
+Access the service on the assigned port (7878 for Radarr). Setup auth method as with Prowlarr.
+
+Go to _Settings -> General_, grab the API key and paste into Prowlarr.
+
+Now go to _Movies / Series / Library_ and click on **Import Existing Movies** and point to the folder with movies. Check correctness of import and click **Import {x} Movies**.
+
+For renaming, go to _Settings -> Media Management_ and enable **Rename Movies**. Then go click on an imported movie and **Preview Rename**.
+
+Go to _Settings -> Download Clients_ and add qBittorrent and NZBGet (if using). Replace localhost with relevant IPs.
+
+### Bazarr
+
+Go to _Settings -> Languages_ and put in the desired subtitle languages in the filter box. Add Language profile and add the languages.
+
+For providers, go to _Settings -> Providers_ and setup any subtitle providers you like. You can select the profile to be applied to movies and shows by default.
+
+Go to _Settings -> Radarr_ and enable it. Paste in Radarr's IP and API key. Do the same for Sonarr.
